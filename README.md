@@ -4,15 +4,11 @@
 
 <div align="center">
 
-# 🧩 skill-install-workflow
-
-**Govern AI Skills before they govern your agents.**
-
-[![AI Skill](https://img.shields.io/badge/AI-Agent%20Skill-6C63FF?style=flat-square)](#)
+[![AI Agent Skill](https://img.shields.io/badge/AI-Agent%20Skill-6C63FF?style=flat-square)](#)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-D97757?style=flat-square)](#)
 [![Codex](https://img.shields.io/badge/OpenAI-Codex-111111?style=flat-square)](#)
-[![Windows](https://img.shields.io/badge/Windows-PowerShell-0078D4?style=flat-square)](#)
-[![Status](https://img.shields.io/badge/status-active-success?style=flat-square)](#)
+[![Windows PowerShell](https://img.shields.io/badge/Windows-PowerShell-0078D4?style=flat-square)](#)
+[![Status](https://img.shields.io/badge/status-active-2EA44F?style=flat-square)](#)
 
 **English** · [简体中文](./README.zh-CN.md)
 
@@ -20,76 +16,55 @@
 
 ---
 
-## 🌱 Why?
+## 📌 Overview
 
-Installing an AI Skill looks simple:
+As local AI Agent ecosystems grow, the same Skill can easily be installed several times, drift into different versions, lose its GitHub provenance, or overlap with another Skill under a different name.
 
-```text
-Download → Copy → Done
-```
+`skill-install-workflow` turns Skill installation into a governed lifecycle:
 
-Until your local environment becomes:
+> **identify → compare → decide → install → link → register → validate**
 
-```text
-~/.claude/skills/
-~/.codex/skills/
-~/.agents/skills/
-~/.cc-switch/skills/
+The goal is not to maximize the number of Skills. The goal is to keep the Skill ecosystem **clean, traceable, maintainable and reproducible**.
 
-skill-a
-skill-a-new
-skill-a-v2
-another-skill-doing-the-same-thing
-...
-```
-
-Then the real questions begin:
-
-> Which copy is the real one?  
-> Which version is better?  
-> Is this capability already installed under another name?  
-> Will an update overwrite local changes?
-
-`skill-install-workflow` turns Skill installation from a file-copy operation into a **governed lifecycle decision**.
-
-## 🧠 Core idea
-
-> **LLM decides. Deterministic tools execute. Validation verifies.**
+## 🔄 Workflow
 
 ```mermaid
 flowchart LR
-    A["📦 Candidate Skill"] --> B["🔎 Resolve source"]
-    B --> C["🧪 Stage & inspect"]
-    C --> D["🔁 Duplicate check"]
-    D --> E["🧬 Version comparison"]
-    E --> F["🧠 Functional analysis"]
-    F --> G{"LLM decision"}
-    G -->|Install| H["📥 Canonical install"]
-    G -->|Update| I["♻️ Update existing"]
-    G -->|Merge| J["🧩 Merge proposal"]
-    G -->|Reject| K["⛔ Stop"]
-    H --> L["🔗 Consumer links"]
-    I --> L
-    L --> M["🧾 Provenance"]
-    M --> N["✅ Validation"]
+    A["1 · Install request"] --> B["2 · Resolve source"]
+    B --> C["3 · Stage & inspect"]
+    C --> D["4 · Compare"]
+    D --> E["5 · LLM decision"]
+    E --> F["6 · Install & link"]
+    F --> G["7 · Register"]
+    G --> H["8 · Validate"]
 ```
 
-## 🎯 Explicit decisions
+### Three-layer responsibility
+
+| Layer | Responsibility |
+|---|---|
+| 🧠 **LLM** | Understand purpose, version differences, overlap and risk |
+| ⚙️ **Workflow / scripts** | Perform deterministic installation, linking and metadata operations |
+| ✅ **Validation** | Verify canonical source, hashes, links and provenance |
+
+## 🧭 Decision model
 
 | Decision | Meaning |
 |---|---|
-| `INSTALL_NEW` | Install a genuinely new Skill |
-| `DO_NOT_INSTALL` | Existing capability already covers it |
-| `UPDATE_EXISTING` | Candidate is a better version |
-| `MERGE_INTO_EXISTING` | Absorb useful capabilities without adding another Skill |
-| `KEEP_SEPARATE` | Similar domain, different responsibility |
-| `REJECT_INVALID` | Incomplete or malformed Skill |
-| `REJECT_HIGH_RISK` | Risk exceeds the accepted boundary |
-| `SOURCE_VERIFICATION_REQUIRED` | Upstream provenance is uncertain |
+| 🟢 `INSTALL_NEW` | Install a genuinely new Skill |
+| 🔴 `DO_NOT_INSTALL` | Existing capability already covers it |
+| 🔵 `UPDATE_EXISTING` | Candidate is a better version of an existing Skill |
+| 🟣 `MERGE_INTO_EXISTING` | Absorb useful capabilities without creating a duplicate |
+| 🟡 `KEEP_SEPARATE` | Similar domain, but different responsibility |
+| ⛔ `REJECT_INVALID` | Incomplete or malformed Skill |
+| 🛡️ `REJECT_HIGH_RISK` | Risk exceeds the accepted boundary |
+| 🔎 `SOURCE_VERIFICATION_REQUIRED` | Upstream provenance is uncertain |
 
-## 🔬 More than filename matching
+## 🔬 What gets compared?
 
-The workflow compares:
+The workflow does **not** rely only on folder names, hashes or timestamps.
+
+It evaluates:
 
 ```text
 purpose
@@ -101,13 +76,14 @@ permissions
 safety boundaries
 scripts / references
 upstream provenance
+local modifications
 ```
 
 and distinguishes:
 
 ```mermaid
 flowchart TD
-    A["Candidate vs Existing"] --> B["Exact Duplicate"]
+    A["Candidate vs existing Skills"] --> B["Exact Duplicate"]
     A --> C["Same Skill / Different Version"]
     A --> D["Near Duplicate"]
     A --> E["Functional Overlap"]
@@ -125,7 +101,7 @@ flowchart TD
     C -. SymbolicLink .-> D["DeepSeek Harness"]
 ```
 
-The goal is:
+Instead of maintaining several physical copies, the target is:
 
 ```text
 one Skill
@@ -134,9 +110,9 @@ one Skill
 + multiple Agent consumers
 ```
 
-## 🔗 Provenance matters
+## 🧾 Provenance tracking
 
-A GitHub-installed Skill should remain traceable:
+A GitHub-hosted Skill should remain traceable:
 
 ```yaml
 name: example-skill
@@ -148,19 +124,21 @@ content_hash: ...
 local_modified: false
 ```
 
-That makes future updates, rollback and auditing reproducible.
+This makes update checks, rollback and auditing reproducible.
 
-## 🛡 Safety gate
+## 🛡 Safety & approval gate
 
-A new independent low-risk Skill should install without redundant confirmation. Approval is required when an operation would:
+A user request such as “install this Skill” is enough authorization for a **new, independent, low-risk** Skill.
 
-- replace an existing Skill;
-- merge workflows;
+The workflow stops for explicit approval when an operation would:
+
+- replace an existing canonical Skill;
+- merge two Skills;
 - overwrite local modifications;
-- introduce high-risk behavior;
-- rely on an unverified source.
+- install a high-risk Skill;
+- depend on an unverified upstream source.
 
-## 💬 Intended experience
+## 💬 Intended interaction
 
 ```text
 User:
@@ -181,14 +159,20 @@ Why:
 Approval required because this replaces the canonical version.
 ```
 
+## ✨ Key features
+
+- 🔁 Exact-duplicate detection
+- 🧬 Version-aware comparison
+- 🧠 Semantic functional-overlap analysis
+- 🛡 Risk-aware installation gate
+- 🔗 Symbolic-link friendly multi-Agent sharing
+- 🧾 Git provenance tracking
+- ✅ Post-install integrity validation
+
 ## 🤝 Designed for
 
-- Claude Code
-- OpenAI Codex
-- DeepSeek Harness
-- CC Switch
-- local multi-agent Skill environments
+Claude Code · OpenAI Codex · DeepSeek Harness · CC Switch · local multi-Agent Skill environments
 
-## 🧭 Philosophy
+---
 
 > **Skill installation is not a file-copy operation. It is a lifecycle decision.**
