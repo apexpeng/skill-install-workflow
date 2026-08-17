@@ -26,6 +26,82 @@ As local AI Agent ecosystems grow, the same Skill can easily be installed severa
 
 The goal is not to maximize the number of Skills. The goal is to keep the Skill ecosystem **clean, traceable, maintainable and reproducible**.
 
+## 🔄 Workflow
+
+```mermaid
+flowchart LR
+    A["1 · Install request"] --> B["2 · Resolve source"]
+    B --> C["3 · Stage & inspect"]
+    C --> D["4 · Compare"]
+    D --> E["5 · LLM decision"]
+    E --> F["6 · Install & link"]
+    F --> G["7 · Register"]
+    G --> H["8 · Validate"]
+```
+
+### Three-layer responsibility
+
+| Layer | Responsibility |
+|---|---|
+| 🧠 **LLM** | Understand purpose, version differences, overlap and risk |
+| ⚙️ **Workflow / scripts** | Perform deterministic installation, linking and metadata operations |
+| ✅ **Validation** | Verify canonical source, hashes, links and provenance |
+
+## 🧭 Decision model
+
+| Decision | Meaning |
+|---|---|
+| 🟢 `INSTALL_NEW` | Install a genuinely new Skill |
+| 🔴 `DO_NOT_INSTALL` | Existing capability already covers it |
+| 🔵 `UPDATE_EXISTING` | Candidate is a better version of an existing Skill |
+| 🟣 `MERGE_INTO_EXISTING` | Absorb useful capabilities without creating a duplicate |
+| 🟡 `KEEP_SEPARATE` | Similar domain, but different responsibility |
+| ⛔ `REJECT_INVALID` | Incomplete or malformed Skill |
+| 🛡️ `REJECT_HIGH_RISK` | Risk exceeds the accepted boundary |
+| 🔎 `SOURCE_VERIFICATION_REQUIRED` | Upstream provenance is uncertain |
+
+## 🔬 What gets compared?
+
+The workflow does **not** rely only on folder names, hashes or timestamps.
+
+It evaluates:
+
+```text
+purpose
+trigger
+workflow
+inputs / outputs
+tools
+permissions
+safety boundaries
+scripts / references
+upstream provenance
+local modifications
+```
+
+and distinguishes:
+
+```mermaid
+flowchart TD
+    A["Candidate vs existing Skills"] --> B["Exact Duplicate"]
+    A --> C["Same Skill / Different Version"]
+    A --> D["Near Duplicate"]
+    A --> E["Functional Overlap"]
+    A --> F["Parent / Child"]
+    A --> G["Complementary"]
+    A --> H["Independent"]
+```
+
+## ✨ Key features
+
+- 🔁 Exact-duplicate detection
+- 🧬 Version-aware comparison
+- 🧠 Semantic functional-overlap analysis
+- 🛡 Risk-aware installation gate
+- 🔗 Symbolic-link friendly multi-Agent sharing
+- 🧾 Git provenance tracking
+- ✅ Post-install integrity validation
+
 ## 📦 Installation
 
 `skill-install-workflow` is an AI Agent Skill. You can install it directly into the Skill directory used by your Agent, even if you do not use CC Switch.
@@ -167,72 +243,6 @@ Why this order?
 2. **`r-data-lineage-plotting` second** — establishes data-lineage, directory-role and reproducibility rules for scientific R projects.
 3. **`write-human-r-code` third** — adds human-readable R coding and refactoring rules on top of the lineage foundation, and explicitly pairs with `r-data-lineage-plotting` when data files or analysis objects are involved.
 
-## 🔄 Workflow
-
-```mermaid
-flowchart LR
-    A["1 · Install request"] --> B["2 · Resolve source"]
-    B --> C["3 · Stage & inspect"]
-    C --> D["4 · Compare"]
-    D --> E["5 · LLM decision"]
-    E --> F["6 · Install & link"]
-    F --> G["7 · Register"]
-    G --> H["8 · Validate"]
-```
-
-### Three-layer responsibility
-
-| Layer | Responsibility |
-|---|---|
-| 🧠 **LLM** | Understand purpose, version differences, overlap and risk |
-| ⚙️ **Workflow / scripts** | Perform deterministic installation, linking and metadata operations |
-| ✅ **Validation** | Verify canonical source, hashes, links and provenance |
-
-## 🧭 Decision model
-
-| Decision | Meaning |
-|---|---|
-| 🟢 `INSTALL_NEW` | Install a genuinely new Skill |
-| 🔴 `DO_NOT_INSTALL` | Existing capability already covers it |
-| 🔵 `UPDATE_EXISTING` | Candidate is a better version of an existing Skill |
-| 🟣 `MERGE_INTO_EXISTING` | Absorb useful capabilities without creating a duplicate |
-| 🟡 `KEEP_SEPARATE` | Similar domain, but different responsibility |
-| ⛔ `REJECT_INVALID` | Incomplete or malformed Skill |
-| 🛡️ `REJECT_HIGH_RISK` | Risk exceeds the accepted boundary |
-| 🔎 `SOURCE_VERIFICATION_REQUIRED` | Upstream provenance is uncertain |
-
-## 🔬 What gets compared?
-
-The workflow does **not** rely only on folder names, hashes or timestamps.
-
-It evaluates:
-
-```text
-purpose
-trigger
-workflow
-inputs / outputs
-tools
-permissions
-safety boundaries
-scripts / references
-upstream provenance
-local modifications
-```
-
-and distinguishes:
-
-```mermaid
-flowchart TD
-    A["Candidate vs existing Skills"] --> B["Exact Duplicate"]
-    A --> C["Same Skill / Different Version"]
-    A --> D["Near Duplicate"]
-    A --> E["Functional Overlap"]
-    A --> F["Parent / Child"]
-    A --> G["Complementary"]
-    A --> H["Independent"]
-```
-
 ## 🏗 Recommended architecture
 
 ```mermaid
@@ -299,16 +309,6 @@ Why:
 
 Approval required because this replaces the canonical version.
 ```
-
-## ✨ Key features
-
-- 🔁 Exact-duplicate detection
-- 🧬 Version-aware comparison
-- 🧠 Semantic functional-overlap analysis
-- 🛡 Risk-aware installation gate
-- 🔗 Symbolic-link friendly multi-Agent sharing
-- 🧾 Git provenance tracking
-- ✅ Post-install integrity validation
 
 ## 🤝 Designed for
 
