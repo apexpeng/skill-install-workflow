@@ -26,6 +26,82 @@
 
 目标不是让 Skill 越多越好，而是让整个 Skill 生态保持**干净、可追溯、可维护、可复现**。
 
+## 🔄 工作流程
+
+```mermaid
+flowchart LR
+    A["1 · 安装请求"] --> B["2 · 解析来源"]
+    B --> C["3 · 暂存与检查"]
+    C --> D["4 · 比较"]
+    D --> E["5 · LLM 决策"]
+    E --> F["6 · 安装与链接"]
+    F --> G["7 · 登记来源"]
+    G --> H["8 · 完整验证"]
+```
+
+### 三层职责
+
+| 层级 | 职责 |
+|---|---|
+| 🧠 **LLM** | 理解用途、版本差异、功能重叠与风险 |
+| ⚙️ **工作流 / 脚本** | 执行确定性的安装、链接和元数据操作 |
+| ✅ **验证** | 检查 canonical、Hash、链接和 provenance |
+
+## 🧭 决策模型
+
+| Decision | 含义 |
+|---|---|
+| 🟢 `INSTALL_NEW` | 安装真正新的 Skill |
+| 🔴 `DO_NOT_INSTALL` | 已有能力覆盖，不重复安装 |
+| 🔵 `UPDATE_EXISTING` | 候选版本更适合作为主版本 |
+| 🟣 `MERGE_INTO_EXISTING` | 吸收有效能力，不新增重复 Skill |
+| 🟡 `KEEP_SEPARATE` | 领域相近，但职责不同 |
+| ⛔ `REJECT_INVALID` | Skill 残缺或结构无效 |
+| 🛡️ `REJECT_HIGH_RISK` | 风险超过可接受边界 |
+| 🔎 `SOURCE_VERIFICATION_REQUIRED` | upstream 来源需要进一步确认 |
+
+## 🔬 真正比较的是什么？
+
+这个工作流不会只根据文件夹名、Hash 或时间戳做判断。
+
+它会实际比较：
+
+```text
+用途
+trigger
+workflow
+输入 / 输出
+工具
+权限
+安全边界
+scripts / references
+upstream provenance
+本地修改
+```
+
+并区分：
+
+```mermaid
+flowchart TD
+    A["候选 Skill vs 现有 Skill"] --> B["完全重复"]
+    A --> C["同 Skill / 不同版本"]
+    A --> D["Near Duplicate"]
+    A --> E["功能重叠"]
+    A --> F["Parent / Child"]
+    A --> G["互补"]
+    A --> H["独立"]
+```
+
+## ✨ 核心特性
+
+- 🔁 完全重复检测
+- 🧬 多版本语义比较
+- 🧠 功能重叠判断
+- 🛡 风险门控
+- 🔗 适配 SymbolicLink 的多 Agent 共享
+- 🧾 Git provenance 追踪
+- ✅ 安装后完整性验证
+
 ## 📦 安装
 
 `skill-install-workflow` 本质上是一个 AI Agent Skill。即使不使用 CC Switch，也可以直接安装到当前 Agent 使用的 Skill 目录中。
@@ -167,72 +243,6 @@ ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/sk
 2. **再安装 `r-data-lineage-plotting`**：先建立科研 R 项目的数据血缘、目录职责与可复现性基础。
 3. **最后安装 `write-human-r-code`**：在数据血缘基础上进一步约束 R 代码的可读性、科研透明性和重构方式；当任务涉及数据文件或分析对象时，它会与 `r-data-lineage-plotting` 配合使用。
 
-## 🔄 工作流程
-
-```mermaid
-flowchart LR
-    A["1 · 安装请求"] --> B["2 · 解析来源"]
-    B --> C["3 · 暂存与检查"]
-    C --> D["4 · 比较"]
-    D --> E["5 · LLM 决策"]
-    E --> F["6 · 安装与链接"]
-    F --> G["7 · 登记来源"]
-    G --> H["8 · 完整验证"]
-```
-
-### 三层职责
-
-| 层级 | 职责 |
-|---|---|
-| 🧠 **LLM** | 理解用途、版本差异、功能重叠与风险 |
-| ⚙️ **工作流 / 脚本** | 执行确定性的安装、链接和元数据操作 |
-| ✅ **验证** | 检查 canonical、Hash、链接和 provenance |
-
-## 🧭 决策模型
-
-| Decision | 含义 |
-|---|---|
-| 🟢 `INSTALL_NEW` | 安装真正新的 Skill |
-| 🔴 `DO_NOT_INSTALL` | 已有能力覆盖，不重复安装 |
-| 🔵 `UPDATE_EXISTING` | 候选版本更适合作为主版本 |
-| 🟣 `MERGE_INTO_EXISTING` | 吸收有效能力，不新增重复 Skill |
-| 🟡 `KEEP_SEPARATE` | 领域相近，但职责不同 |
-| ⛔ `REJECT_INVALID` | Skill 残缺或结构无效 |
-| 🛡️ `REJECT_HIGH_RISK` | 风险超过可接受边界 |
-| 🔎 `SOURCE_VERIFICATION_REQUIRED` | upstream 来源需要进一步确认 |
-
-## 🔬 真正比较的是什么？
-
-这个工作流不会只根据文件夹名、Hash 或时间戳做判断。
-
-它会实际比较：
-
-```text
-用途
-trigger
-workflow
-输入 / 输出
-工具
-权限
-安全边界
-scripts / references
-upstream provenance
-本地修改
-```
-
-并区分：
-
-```mermaid
-flowchart TD
-    A["候选 Skill vs 现有 Skill"] --> B["完全重复"]
-    A --> C["同 Skill / 不同版本"]
-    A --> D["Near Duplicate"]
-    A --> E["功能重叠"]
-    A --> F["Parent / Child"]
-    A --> G["互补"]
-    A --> H["独立"]
-```
-
 ## 🏗 推荐架构
 
 ```mermaid
@@ -299,16 +309,6 @@ Decision: UPDATE_EXISTING
 
 由于需要替换已有 canonical Skill，等待批准。
 ```
-
-## ✨ 核心特性
-
-- 🔁 完全重复检测
-- 🧬 多版本语义比较
-- 🧠 功能重叠判断
-- 🛡 风险门控
-- 🔗 适配 SymbolicLink 的多 Agent 共享
-- 🧾 Git provenance 追踪
-- ✅ 安装后完整性验证
 
 ## 🤝 面向
 
