@@ -28,11 +28,104 @@ The goal is not to maximize the number of Skills. The goal is to keep the Skill 
 
 ## 📦 Installation
 
-### Recommended: manage Skills with CC Switch
+`skill-install-workflow` is an AI Agent Skill. You can install it directly into the Skill directory used by your Agent, even if you do not use CC Switch.
 
-For a multi-agent setup, use **CC Switch as the unified Skill manager** instead of cloning separate copies into Claude Code, Codex, or other agent directories. CC Switch can keep the Skill source under its managed storage and distribute it to supported agents using symbolic links.
+### Option A — direct installation without CC Switch
 
-Import this Skill into CC Switch with the official deep-link protocol:
+Choose the Agent you actually use. The examples below use the common user-level Skill directories.
+
+#### Claude Code
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.claude/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".claude/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+#### OpenAI Codex
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.codex/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.codex/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".codex/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+#### DeepSeek Harness / shared Agent Skill directory
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.agents/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.agents/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".agents/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+> If your Agent uses a custom Skill directory, install the repository into that configured directory instead.
+
+### Option B — recommended for multi-Agent environments: manage Skills with CC Switch
+
+Direct installation is perfectly valid for a single Agent. If you use **multiple Agents on the same machine**, however, maintaining one physical copy per Agent quickly creates duplicate versions and update drift.
+
+For that use case, this project recommends **CC Switch as the centralized Skill-management layer**:
+
+```text
+GitHub Skill
+    ↓
+CC Switch managed storage
+~/.cc-switch/skills/<skill>
+    ↓
+per-Skill SymbolicLink
+    ├── ~/.claude/skills/<skill>
+    ├── ~/.codex/skills/<skill>
+    └── ~/.agents/skills/<skill>
+```
+
+Recommended CC Switch settings:
+
+```text
+Skills storage: CC Switch
+Sync method: SymbolicLink
+```
+
+This keeps:
+
+```text
+one canonical Skill entity
++ one provenance record
++ multiple Agent consumers
+```
+
+instead of several independent physical copies.
+
+Import this Skill into CC Switch with the Deep Link:
 
 **Windows PowerShell**
 
@@ -52,9 +145,13 @@ Or open this URI directly:
 ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main
 ```
 
-After import, open **CC Switch → Skills** and install/sync the Skill to the agents you want to use. For shared local environments, **CC Switch built-in storage + SymbolicLink sync** is the recommended setup.
+After import, open **CC Switch → Skills**, choose the Agent consumers that should use the Skill, and keep **SymbolicLink** as the synchronization method.
+
+> CC Switch is recommended for centralized multi-Agent management; it is **not a prerequisite for installing ordinary Skills**.
 
 ### Recommended installation order for this Skill suite
+
+If you plan to use all three repositories together, install them in this order:
 
 ```text
 1. skill-install-workflow
