@@ -26,6 +26,50 @@ As local AI Agent ecosystems grow, the same Skill can easily be installed severa
 
 The goal is not to maximize the number of Skills. The goal is to keep the Skill ecosystem **clean, traceable, maintainable and reproducible**.
 
+## 📦 Installation
+
+### Recommended: manage Skills with CC Switch
+
+For a multi-agent setup, use **CC Switch as the unified Skill manager** instead of cloning separate copies into Claude Code, Codex, or other agent directories. CC Switch can keep the Skill source under its managed storage and distribute it to supported agents using symbolic links.
+
+Import this Skill into CC Switch with the official deep-link protocol:
+
+**Windows PowerShell**
+
+```powershell
+Start-Process "ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main"
+```
+
+**macOS**
+
+```bash
+open "ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main"
+```
+
+Or open this URI directly:
+
+```text
+ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main
+```
+
+After import, open **CC Switch → Skills** and install/sync the Skill to the agents you want to use. For shared local environments, **CC Switch built-in storage + SymbolicLink sync** is the recommended setup.
+
+### Recommended installation order for this Skill suite
+
+```text
+1. skill-install-workflow
+        ↓
+2. r-data-lineage-plotting
+        ↓
+3. write-human-r-code
+```
+
+Why this order?
+
+1. **`skill-install-workflow` first** — establishes the governance layer for evaluating, installing, updating, deduplicating and validating later Skills.
+2. **`r-data-lineage-plotting` second** — establishes data-lineage, directory-role and reproducibility rules for scientific R projects.
+3. **`write-human-r-code` third** — adds human-readable R coding and refactoring rules on top of the lineage foundation, and explicitly pairs with `r-data-lineage-plotting` when data files or analysis objects are involved.
+
 ## 🔄 Workflow
 
 ```mermaid
