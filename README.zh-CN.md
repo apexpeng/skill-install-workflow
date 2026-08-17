@@ -28,11 +28,104 @@
 
 ## 📦 安装
 
-### 推荐：使用 CC Switch 统一管理 Skill
+`skill-install-workflow` 本质上是一个 AI Agent Skill。即使不使用 CC Switch，也可以直接安装到当前 Agent 使用的 Skill 目录中。
 
-对于同时使用 Claude Code、Codex、DeepSeek Harness 等多个 Agent 的本地环境，推荐由 **CC Switch 统一管理 Skill**，而不是分别向各 Agent 目录复制多份实体 Skill。CC Switch 可以集中保存 Skill 源，并通过软链接分发到不同 Agent。
+### 方式 A — 不使用 CC Switch，直接安装
 
-使用 CC Switch 官方 Deep Link 导入本 Skill：
+只需要选择你实际使用的 Agent。下面给出常见用户级 Skill 目录的安装命令。
+
+#### Claude Code
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.claude/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".claude/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+#### OpenAI Codex
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.codex/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.codex/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".codex/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+#### DeepSeek Harness / shared Agent Skill 目录
+
+**macOS / Linux**
+
+```bash
+mkdir -p ~/.agents/skills
+git clone https://github.com/apexpeng/skill-install-workflow.git \
+  ~/.agents/skills/skill-install-workflow
+```
+
+**Windows PowerShell**
+
+```powershell
+$target = Join-Path $HOME ".agents/skills/skill-install-workflow"
+New-Item -ItemType Directory -Force (Split-Path $target -Parent) | Out-Null
+git clone https://github.com/apexpeng/skill-install-workflow.git $target
+```
+
+> 如果你的 Agent 使用自定义 Skill 目录，请安装到实际配置的目录，而不是机械照搬上述路径。
+
+### 方式 B — 多 Agent 环境推荐：使用 CC Switch 统一管理
+
+直接安装对于单一 Agent 完全可行。只有当你在同一台电脑上同时使用 Claude Code、Codex、DeepSeek Harness 等多个 Agent 时，分别维护多份实体 Skill 才容易产生重复、版本漂移和更新不同步。
+
+因此本项目推荐在**多 Agent 环境**中使用 CC Switch 作为统一 Skill 管理层：
+
+```text
+GitHub Skill
+    ↓
+CC Switch managed storage
+~/.cc-switch/skills/<skill>
+    ↓
+逐 Skill SymbolicLink
+    ├── ~/.claude/skills/<skill>
+    ├── ~/.codex/skills/<skill>
+    └── ~/.agents/skills/<skill>
+```
+
+推荐 CC Switch 设置：
+
+```text
+Skills 存储位置：CC Switch
+同步方式：SymbolicLink（软链接）
+```
+
+这样得到的是：
+
+```text
+一个 canonical Skill 实体
++ 一份 provenance
++ 多个 Agent consumer
+```
+
+而不是多个彼此独立的实体副本。
+
+使用 CC Switch Deep Link 导入本 Skill：
 
 **Windows PowerShell**
 
@@ -52,9 +145,13 @@ open "ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexp
 ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main
 ```
 
-导入后，在 **CC Switch → Skills** 中选择需要使用该 Skill 的 Agent 并完成安装/同步。对于多 Agent 环境，推荐采用 **CC Switch 内置存储 + SymbolicLink（软链接）同步**。
+导入后，在 **CC Switch → Skills** 中选择需要使用该 Skill 的 Agent，并保持 **SymbolicLink** 作为同步方式。
+
+> CC Switch 是多 Agent 集中管理的推荐方案，但**不是普通 Skill 安装的前置条件**。
 
 ### 三个 Skill 的推荐安装顺序
+
+如果计划同时使用这三个仓库，推荐按以下顺序安装：
 
 ```text
 1. skill-install-workflow
