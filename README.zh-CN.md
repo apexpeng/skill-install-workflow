@@ -26,6 +26,50 @@
 
 目标不是让 Skill 越多越好，而是让整个 Skill 生态保持**干净、可追溯、可维护、可复现**。
 
+## 📦 安装
+
+### 推荐：使用 CC Switch 统一管理 Skill
+
+对于同时使用 Claude Code、Codex、DeepSeek Harness 等多个 Agent 的本地环境，推荐由 **CC Switch 统一管理 Skill**，而不是分别向各 Agent 目录复制多份实体 Skill。CC Switch 可以集中保存 Skill 源，并通过软链接分发到不同 Agent。
+
+使用 CC Switch 官方 Deep Link 导入本 Skill：
+
+**Windows PowerShell**
+
+```powershell
+Start-Process "ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main"
+```
+
+**macOS**
+
+```bash
+open "ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main"
+```
+
+也可以直接打开：
+
+```text
+ccswitch://v1/import?resource=skill&name=skill-install-workflow&repo=apexpeng/skill-install-workflow&branch=main
+```
+
+导入后，在 **CC Switch → Skills** 中选择需要使用该 Skill 的 Agent 并完成安装/同步。对于多 Agent 环境，推荐采用 **CC Switch 内置存储 + SymbolicLink（软链接）同步**。
+
+### 三个 Skill 的推荐安装顺序
+
+```text
+1. skill-install-workflow
+        ↓
+2. r-data-lineage-plotting
+        ↓
+3. write-human-r-code
+```
+
+推荐理由：
+
+1. **先安装 `skill-install-workflow`**：先建立后续 Skill 的审查、去重、版本判断、安装、来源登记与验证治理入口。
+2. **再安装 `r-data-lineage-plotting`**：先建立科研 R 项目的数据血缘、目录职责与可复现性基础。
+3. **最后安装 `write-human-r-code`**：在数据血缘基础上进一步约束 R 代码的可读性、科研透明性和重构方式；当任务涉及数据文件或分析对象时，它会与 `r-data-lineage-plotting` 配合使用。
+
 ## 🔄 工作流程
 
 ```mermaid
