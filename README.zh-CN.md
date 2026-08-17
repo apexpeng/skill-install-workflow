@@ -1,17 +1,14 @@
 <p align="center">
-  <img src="assets/banner.svg" width="100%" alt="skill-install-workflow banner">
+  <img src="assets/banner.zh-CN.svg" width="100%" alt="skill-install-workflow 中文横幅">
 </p>
 
 <div align="center">
 
-# 🧩 skill-install-workflow
-
-**在 Skill 管理 Agent 之前，先管理好 Skill。**
-
-[![AI Skill](https://img.shields.io/badge/AI-Agent%20Skill-6C63FF?style=flat-square)](#)
+[![AI Agent Skill](https://img.shields.io/badge/AI-Agent%20Skill-6C63FF?style=flat-square)](#)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-D97757?style=flat-square)](#)
 [![Codex](https://img.shields.io/badge/OpenAI-Codex-111111?style=flat-square)](#)
-[![Windows](https://img.shields.io/badge/Windows-PowerShell-0078D4?style=flat-square)](#)
+[![Windows PowerShell](https://img.shields.io/badge/Windows-PowerShell-0078D4?style=flat-square)](#)
+[![Status](https://img.shields.io/badge/status-active-2EA44F?style=flat-square)](#)
 
 [English](./README.md) · **简体中文**
 
@@ -19,76 +16,55 @@
 
 ---
 
-## 🌱 为什么需要它？
+## 📌 概述
 
-AI Skill 最开始的安装通常很简单：
+随着本地 AI Agent 生态不断扩展，同一个 Skill 很容易被重复安装、分叉成多个版本、失去 GitHub 来源，或者与另一个不同名称的 Skill 出现功能重叠。
 
-```text
-下载 → 复制 → 完成
-```
+`skill-install-workflow` 把 Skill 安装变成一条可治理的生命周期：
 
-但随着 Claude Code、Codex、DeepSeek Harness 等工具同时使用，目录很容易变成：
+> **识别 → 比较 → 决策 → 安装 → 链接 → 登记 → 验证**
 
-```text
-~/.claude/skills/
-~/.codex/skills/
-~/.agents/skills/
-~/.cc-switch/skills/
+目标不是让 Skill 越多越好，而是让整个 Skill 生态保持**干净、可追溯、可维护、可复现**。
 
-skill-a
-skill-a-new
-skill-a-v2
-另一个功能几乎相同的 skill
-...
-```
-
-真正棘手的问题随之出现：
-
-> 到底哪一个才是正式版本？  
-> 更新时间新的版本就一定更好吗？  
-> 新 Skill 是否已经被现有 Skill 覆盖？  
-> GitHub 更新会不会覆盖本地修改？
-
-`skill-install-workflow` 的目标，是把 Skill 安装从简单文件操作升级为**可判断、可追踪、可验证的生命周期治理流程**。
-
-## 🧠 核心理念
-
-> **大语言模型负责判断，确定性工具负责执行，验证机制负责验收。**
+## 🔄 工作流程
 
 ```mermaid
 flowchart LR
-    A["📦 候选 Skill"] --> B["🔎 识别来源"]
-    B --> C["🧪 暂存与结构检查"]
-    C --> D["🔁 重复检测"]
-    D --> E["🧬 版本比较"]
-    E --> F["🧠 功能语义分析"]
-    F --> G{"LLM 决策"}
-    G -->|新增| H["📥 Canonical 安装"]
-    G -->|更新| I["♻️ 更新已有 Skill"]
-    G -->|合并| J["🧩 合并方案"]
-    G -->|拒绝| K["⛔ 停止"]
-    H --> L["🔗 Agent 链接"]
-    I --> L
-    L --> M["🧾 记录来源"]
-    M --> N["✅ 完整验证"]
+    A["1 · 安装请求"] --> B["2 · 解析来源"]
+    B --> C["3 · 暂存与检查"]
+    C --> D["4 · 比较"]
+    D --> E["5 · LLM 决策"]
+    E --> F["6 · 安装与链接"]
+    F --> G["7 · 登记来源"]
+    G --> H["8 · 完整验证"]
 ```
 
-## 🎯 模型需要真正做决定
+### 三层职责
+
+| 层级 | 职责 |
+|---|---|
+| 🧠 **LLM** | 理解用途、版本差异、功能重叠与风险 |
+| ⚙️ **工作流 / 脚本** | 执行确定性的安装、链接和元数据操作 |
+| ✅ **验证** | 检查 canonical、Hash、链接和 provenance |
+
+## 🧭 决策模型
 
 | Decision | 含义 |
 |---|---|
-| `INSTALL_NEW` | 安装新的独立 Skill |
-| `DO_NOT_INSTALL` | 已有能力覆盖，不重复安装 |
-| `UPDATE_EXISTING` | 升级已有 Skill |
-| `MERGE_INTO_EXISTING` | 吸收有效能力，不新增重复 Skill |
-| `KEEP_SEPARATE` | 相似但职责不同，保持独立 |
-| `REJECT_INVALID` | Skill 结构无效或残缺 |
-| `REJECT_HIGH_RISK` | 风险超过可接受边界 |
-| `SOURCE_VERIFICATION_REQUIRED` | upstream 来源需要进一步确认 |
+| 🟢 `INSTALL_NEW` | 安装真正新的 Skill |
+| 🔴 `DO_NOT_INSTALL` | 已有能力覆盖，不重复安装 |
+| 🔵 `UPDATE_EXISTING` | 候选版本更适合作为主版本 |
+| 🟣 `MERGE_INTO_EXISTING` | 吸收有效能力，不新增重复 Skill |
+| 🟡 `KEEP_SEPARATE` | 领域相近，但职责不同 |
+| ⛔ `REJECT_INVALID` | Skill 残缺或结构无效 |
+| 🛡️ `REJECT_HIGH_RISK` | 风险超过可接受边界 |
+| 🔎 `SOURCE_VERIFICATION_REQUIRED` | upstream 来源需要进一步确认 |
 
-## 🔬 不只是比较文件名
+## 🔬 真正比较的是什么？
 
-真正需要理解的是：
+这个工作流不会只根据文件夹名、Hash 或时间戳做判断。
+
+它会实际比较：
 
 ```text
 用途
@@ -99,7 +75,8 @@ workflow
 权限
 安全边界
 scripts / references
-Git upstream
+upstream provenance
+本地修改
 ```
 
 并区分：
@@ -112,7 +89,7 @@ flowchart TD
     A --> E["功能重叠"]
     A --> F["Parent / Child"]
     A --> G["互补"]
-    A --> H["完全独立"]
+    A --> H["独立"]
 ```
 
 ## 🏗 推荐架构
@@ -124,33 +101,18 @@ flowchart TD
     C -. SymbolicLink .-> D["DeepSeek Harness"]
 ```
 
-目标不是：
-
-```text
-同一个 Skill
-× 三个实体副本
-× 多个不同版本
-```
-
-而是：
+目标不是维护多份实体副本，而是：
 
 ```text
 一个 Skill
 + 一个 canonical source
 + 一份 provenance
-+ 多个 Agent 共享
++ 多个 Agent consumer
 ```
 
-## 🔗 Skill 也需要“来源血缘”
+## 🧾 来源追踪
 
-GitHub Skill 最好能够持续回答：
-
-> 它来自哪里？  
-> 当前安装的是哪个 commit？  
-> 是否存在本地修改？  
-> upstream 是否已经更新？
-
-例如：
+GitHub Skill 应持续保留来源信息：
 
 ```yaml
 name: example-skill
@@ -162,25 +124,19 @@ content_hash: ...
 local_modified: false
 ```
 
-## 🛡 什么情况下需要人工确认？
+这样未来才能可靠完成更新检查、回滚和审计。
 
-对于：
+## 🛡 安全与审批边界
 
-```text
-新 Skill + 无冲突 + 无重复 + 低风险
-```
+用户明确说“安装这个 Skill”时，对于**新、独立、低风险** Skill，不需要反复确认。
 
-用户已经明确说“安装”时，不需要再次确认。
+只有以下情况进入人工审批：
 
-只有涉及：
-
-- 覆盖已有 Skill；
-- 合并 Skill；
-- 丢失本地修改；
-- 高风险行为；
-- upstream 来源不明确；
-
-才进入人工审批。
+- 替换已有 canonical Skill；
+- 合并两个 Skill；
+- 可能覆盖本地修改；
+- 高风险 Skill；
+- upstream 来源无法可靠确认。
 
 ## 💬 理想交互
 
@@ -203,14 +159,20 @@ Decision: UPDATE_EXISTING
 由于需要替换已有 canonical Skill，等待批准。
 ```
 
+## ✨ 核心特性
+
+- 🔁 完全重复检测
+- 🧬 多版本语义比较
+- 🧠 功能重叠判断
+- 🛡 风险门控
+- 🔗 适配 SymbolicLink 的多 Agent 共享
+- 🧾 Git provenance 追踪
+- ✅ 安装后完整性验证
+
 ## 🤝 面向
 
-- Claude Code
-- OpenAI Codex
-- DeepSeek Harness
-- CC Switch
-- 本地多 Agent Skill 管理
+Claude Code · OpenAI Codex · DeepSeek Harness · CC Switch · 本地多 Agent Skill 环境
 
-## 🧭 理念
+---
 
 > **Skill 安装不是一次文件复制，而是一项生命周期决策。**
